@@ -1,0 +1,4 @@
+interface:
+  display_name: "安卓免 Root 代理热点"
+  short_description: "配置与排障 Shizuku、Shizzi 和 FlClash 热点，复用 A97 实测经验"
+  default_prompt: "使用 $android-shizuku-hotspot，依据已有验收记录帮我配置或排查安卓免 Root 代理热点，优先采用免电脑无线启动。"

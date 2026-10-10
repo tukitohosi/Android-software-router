@@ -1,0 +1,12 @@
+work/
+outputs/
+*.apk
+*.log
+*.pcap
+*.pcapng
+*.xml
+.env
+.env.*
+__pycache__/
+.DS_Store
+Thumbs.db

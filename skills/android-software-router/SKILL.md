@@ -1,30 +1,33 @@
 ---
-name: android-shizuku-hotspot
-description: "配置、恢复和排查 Android 手机免 Root 透明代理热点：Shizuku + Shizzi + FlClash，包括免电脑无线启动、SIM 分享、Wi-Fi 中继和下游验收。以 OPPO A97 / ColorOS 14 实测为基线；适用于连接热点后无需在客户端配置代理的需求，不用于普通热点设置或通用刷机解锁。"
+name: android-software-router
+description: "配置、恢复和排查 Android 免刷机、免 Root 轻量软路由：Shizuku + Shizzi + FlClash，实现透明 VPN 热点、SIM 分享、Wi-Fi 中继、免电脑无线启动与下游验收。面向满足版本、权限及网络能力条件的 Android 设备，附 OPPO A97 已验证案例；不用于通用刷机解锁或完整 OpenWrt 部署。"
 ---
 
-# 安卓免 Root 代理热点
+# Android Software Router — 安卓免刷机软路由
 
-把手机现有 VPN 的流量共享给热点客户端，客户端只连接 Wi-Fi，不安装代理、不设置手动代理。已验证组合是原厂 OPPO A97 5G、Shizuku、Shizzi、FlClash；不需要刷机。用中文解释操作，优先减少日常步骤。
+让 Android 手机承担轻量软路由与 VPN 代理网关：Android 热点提供地址分配和转发，Shizzi 把下游流量送入测试隧道，由 FlClash VPN 按规则处理。客户端只连接 Wi-Fi，不安装代理、不设置手动代理；手机不需要刷机或 Root。用中文解释操作，优先减少日常步骤。
+
+这是面向兼容 Android 设备的通用流程，OPPO A97 5G / ColorOS 14 是已有实测案例，不是型号要求。轻量软路由表示手机承担软件路由和网关功能，不承诺完整 OpenWrt 的管理能力；跨型号适用性仍需检查和验收。
 
 ## 按请求读取
 
 - 复用 A97、解释已完成工作或判断是否需要重测：读 [A97 实测与边界](references/a97-verified-case.md)。这是历史证据，不是手机当前状态的实时读数。
 - 首次安装、无线配对、断网恢复、ColorOS 权限或 ADB 问题：读 [配置与排障](references/setup-and-recovery.md) 对应部分。
-- Windows USB 应急启动：使用 [Start-OPPO-PlanA.ps1](scripts/Start-OPPO-PlanA.ps1)；双击入口为同目录 [Start-OPPO-PlanA.cmd](scripts/Start-OPPO-PlanA.cmd)。它只适用于指定型号和安装布局，不是通用安卓脚本。
+- Windows USB 应急启动：使用 [Start-Android-Shizuku.ps1](scripts/Start-Android-Shizuku.ps1)；双击入口为同目录 [Start-Android-Shizuku.cmd](scripts/Start-Android-Shizuku.cmd)。脚本按目标设备发现官方 Shizuku 启动器，不把型号写死；它只负责 Shizuku 启动，不证明整套软路由兼容。
 
 ## 先定位到当前阶段
 
 1. 区分用户要研究、指导、实际配置还是修复。请求保存经验或解释原理不等于要求修改手机。已有配置授权在原范围内继续有效，不因使用 skill 而重复确认。
 2. 已经成功运行时，从当前症状继续；不要为复现教程而卸载应用、重新配对、停止 VPN 或重启手机。不要把早期“只能 USB 启动”的记录当作最终限制。
 3. 新设备先确认准确型号、Android / ROM 版本、Root 状态、现有组件、上游为 SIM 还是 Wi-Fi。连接手机时重新发现目标；多设备不得任取第一台。没有 ADB 连接时可以指导用户在手机上操作，不要因此判定无线方案不可行。
-4. Shizzi 的本方案基线为 Android 13+，并需其兼容性页的 Test network API / Prefer test networks 均支持。其他型号或更新系统需要各自验收，不能套用 A97 的成功结论。
+4. 本方案固定实测组合中的 Shizzi 为 0.4.0-rc.3，安装包为 arm64；通用流程以 Android 13+ / arm64 为基线，并需其兼容性页的 Test network API / Prefer test networks 均支持。Shizuku 本身支持无线启动的版本范围不等于整套方案范围。其他型号或更新系统需要各自验收；新版 Shizzi 主分支的兼容说明不能直接替代该固定版本的边界。
+5. Wi-Fi 中继需要手机同时连接上游 Wi-Fi 并开启热点（STA/AP 并发）。先检查实际系统能力；不支持中继的设备仍可单独评估移动数据共享，不把中继能力视为所有 Android 手机默认具备。
 
 ## 日常最少操作
 
 - Shizuku 已运行：直接确认 FlClash VPN 已连接，再在 **Shizzi 点 Start**。
-- Shizuku 未运行：A97 临时连接一个 Wi-Fi 或另一台手机的热点，在官方 Shizuku 完成首次无线配对，之后通常点“启动”即可。配对操作与每次启动不是同一件事。
-- 启动后可以断开辅助 Wi-Fi，改用 A97 自己的移动数据。这条路径已由原用户在本机确认成功；不要仍标记为“尚未实测”，也不要扩展成所有 ColorOS 手机均保证可用。
+- Shizuku 未运行：目标手机临时连接一个 Wi-Fi 或另一台手机的热点，在官方 Shizuku 完成首次无线配对，之后通常点“启动”即可。配对操作与每次启动不是同一件事。
+- 启动后可尝试断开辅助 Wi-Fi，改用目标手机自己的移动数据，并按下表验证。这条路径已由原用户在 A97 上确认成功；该案例不能仍标记为“尚未实测”，也不能扩展成所有 Android 手机均保证可用。
 - “USB 调试”和开发者选项保持开启不代表必须插线。关闭 Wi-Fi 与关闭 USB 调试是不同操作。
 - 启动顺序：**Shizuku → FlClash VPN → Shizzi Start**。正常停止顺序：**Shizzi Stop → FlClash 停止**。
 - Shizzi 内的 VPN 选项采用 **Always**。它不是 Android 系统“始终开启 VPN”或“阻止未使用 VPN 的连接”的同名设置。
@@ -45,9 +48,9 @@ description: "配置、恢复和排查 Android 手机免 Root 透明代理热点
 
 | 场景 | 关键条件与检查 |
 | --- | --- |
-| SIM 分享 | A97 Wi-Fi 关闭、移动数据开启；客户端关闭自身 VPN / 移动数据，Wi-Fi 代理为无；新 Google 搜索、新 YouTube 视频、出口核对 |
-| Wi-Fi 中继 | A97 连接上游 Wi-Fi，并关闭移动数据以排除回退；客户端维持上述隔离条件后重测 |
-| 无线启动脱离 Wi-Fi | 不连接电脑；无线启动成功后关闭 A97 Wi-Fi，确认 Shizuku 仍运行，再用 SIM 代理热点验证下游 |
+| SIM 分享 | 目标手机 Wi-Fi 关闭、移动数据开启；客户端关闭自身 VPN / 移动数据，Wi-Fi 代理为无；新 Google 搜索、新 YouTube 视频、出口核对 |
+| Wi-Fi 中继 | 目标手机连接上游 Wi-Fi，并关闭移动数据以排除回退；客户端维持上述隔离条件后重测 |
+| 无线启动脱离 Wi-Fi | 不连接电脑；无线启动成功后关闭目标手机 Wi-Fi，确认 Shizuku 仍运行，再用 SIM 代理热点验证下游 |
 | VPN 停止行为 | 仅当此次请求需要此项中断测试时操作；记录热点是否关闭、耗时和客户端新请求，不手动重开系统热点；再按正确顺序恢复 |
 | 熄屏 / 重启 | 按用户目标分别测试，记录真实时长、由谁观察；短时熄屏不能代替长时待机，启动 Shizuku 不能代替 VPN 与代理热点恢复 |
 

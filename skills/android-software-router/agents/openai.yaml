@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Software Router — 安卓免刷机软路由"
+  short_description: "配置安卓免刷机软路由、VPN 热点与 Wi-Fi 中继，含兼容检查和下游验收"
+  default_prompt: "使用 $android-software-router，先检查设备兼容条件，再帮我配置或排查安卓免刷机软路由，优先采用免电脑无线启动，并验证热点客户端实际流量。"
